@@ -1,0 +1,33 @@
+services:
+  fastapi:
+    build:
+      context: ../../
+    environment:
+      UV_NO_SYNC: "1"
+      UV_OFFLINE: "1"
+    env_file: !reset []
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        exec uv run fastapi dev src/files/main.py --host 0.0.0.0 --port 8000
+    volumes:
+      - ./.env.files:/app/.env.files:ro
+      - ./src:/app/src:ro
+      - ./alembic:/app/alembic:ro
+      - ./web:/app/web
+    networks:
+      internal:
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "8111:80"
+    volumes:
+      - ./docker/dev/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./web:/app/web
+    depends_on:
+      - fastapi
+    networks:
+      internal:

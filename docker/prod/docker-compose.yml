@@ -1,0 +1,23 @@
+name: ${COMPOSE_PROJECT_NAME:-file-service-py}
+
+services:
+  fastapi:
+    container_name: ${CONTAINER_NAME:-file-service-py}
+    build: ../..
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PYTHONUNBUFFERED: "1"
+      APP_PORT: ${APP_PORT:-443}
+      TLS_ENABLED: ${TLS_ENABLED:-true}
+    ports:
+      - "${HTTPS_PORT:-8171}:${APP_PORT:-443}"
+    volumes:
+      - ${CRTPATH:-./docker/tls}:/etc/tls:ro
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
