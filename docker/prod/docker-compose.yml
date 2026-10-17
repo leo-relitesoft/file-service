@@ -3,20 +3,31 @@ name: ${COMPOSE_PROJECT_NAME:-file-service-py}
 services:
   fastapi:
     container_name: ${CONTAINER_NAME:-file-service-py}
-    build: ../..
-    restart: unless-stopped
+    build:
+      context: ../..
+    restart: "no"
     env_file:
       - .env
     environment:
       PYTHONUNBUFFERED: "1"
-      APP_PORT: ${APP_PORT:-443}
+      APP_PORT: ${APP_PORT:-80}
       TLS_ENABLED: ${TLS_ENABLED:-true}
     ports:
-      - "${HTTPS_PORT:-8171}:${APP_PORT:-443}"
-    volumes:
-      - ${CRTPATH:-./docker/tls}:/etc/tls:ro
+      - "${HTTPS_PORT:-8171}:${APP_PORT:-8000}"
     networks:
       - internal
+#  nginx:
+#    image: nginx:alpine
+#    restart: always
+#    ports:
+#      - "8171:80"
+#    volumes:
+#      - ./docker/dev/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+#      - ./web:/app/web
+#    depends_on:
+#      - fastapi
+#    networks:
+#      internal:
 
 networks:
   internal:
