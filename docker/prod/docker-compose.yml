@@ -5,6 +5,7 @@ services:
     container_name: ${CONTAINER_NAME:-file-service-py}
     build:
       context: ../..
+      dockerfile: docker/Dockerfile
     restart: "no"
     env_file:
       - .env
