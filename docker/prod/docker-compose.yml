@@ -11,8 +11,6 @@ services:
       - .env
     environment:
       PYTHONUNBUFFERED: "1"
-      APP_PORT: ${APP_PORT:-80}
-      TLS_ENABLED: ${TLS_ENABLED:-true}
     ports:
       - "${HTTPS_PORT:-8171}:${APP_PORT:-8000}"
     networks:
