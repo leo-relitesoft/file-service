@@ -8,12 +8,12 @@ services:
       - /bin/sh
       - -ec
       - |
-        exec uv run fastapi dev src/files/main.py --host 0.0.0.0 --port 8000
+        exec uv run fastapi dev src/files/main.py --host 0.0.0.0 --port 80
     volumes:
       - ./.env:/app/.env:ro
-      - ../../src:/app/src:ro
-      - ../../alembic:/app/alembic:ro
-#      - ./web:/app/web
+      - ./src:/app/src:ro
+      - ./alembic:/app/alembic:ro
+      - ./cloud:/app/cloud
     networks:
       internal:
 

@@ -12,10 +12,10 @@ RUN uv sync --frozen --no-install-project
 COPY src /app/src/
 COPY alembic /app/alembic/
 COPY alembic.ini /app/
-COPY docker/prod/entrypoint.sh /app/docker/entrypoint.sh
+COPY docker/entrypoint.sh /app/docker/entrypoint.sh
 RUN chmod +x /app/docker/entrypoint.sh
 RUN uv sync --frozen
 
-EXPOSE 443 80
+EXPOSE 80
 
 CMD ["/app/docker/entrypoint.sh"]
