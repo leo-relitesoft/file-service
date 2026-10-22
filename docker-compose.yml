@@ -26,6 +26,14 @@ services:
     networks:
       internal:
 
+  cron:
+    build: cron
+    restart: "no"
+    depends_on:
+      - fastapi
+    networks:
+      internal:
+
 networks:
   internal:
     driver: bridge

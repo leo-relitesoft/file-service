@@ -1,18 +1,31 @@
-FROM alpine:latest
+FROM alpine:3.6
 
-# Установка необходимых утилит
-RUN apk add --no-cache curl
+# from https://github.com/aptible/supercronic/releases
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.2/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=cdfde14f50a171cbfc35a3a10429e2ab0709afe0
 
-# Скачивание актуальной версии Supercronic (пример для v0.2.49)
-ENV SUPERCRONIC_URL=https://github.com \
-    SUPERCRONIC=supercronic-linux-amd64
+ENTRYPOINT [ "/sbin/tini", "--" ]
 
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/supercronic"
+# install dependencies
+RUN apk add --no-cache \
+        ca-certificates \
+        curl \
+        tini \
 
-WORKDIR /app
-COPY crontab /app/crontab
+# install supercronic
+# (from https://github.com/aptible/supercronic/releases)
+ && curl -fsSLO "$SUPERCRONIC_URL" \
+ && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+ && chmod +x "$SUPERCRONIC" \
+ && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+ && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic \
 
-# Запуск Supercronic
-CMD ["supercronic", "/app/crontab"]
+# clean up dependencies
+ && apk del --purge \
+        ca-certificates \
+ && rm -rf /var/cache/apk/
+
+ADD crontab /etc/crontab
+
+CMD [ "/usr/local/bin/supercronic", "/etc/crontab" ]
